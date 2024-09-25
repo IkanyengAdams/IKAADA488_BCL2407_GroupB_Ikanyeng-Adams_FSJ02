@@ -6,14 +6,16 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { FaHeart, FaShoppingCart } from "react-icons/fa";
 import Spinner from "./components/common/Spinner";
 import ErrorHandler from "./components/common/ErrorHandler";
+import SearchBar from "./components/common/SearchBar"; 
 
 /**
- * Displays a page of products with pagination, search functionality, and product cards.
+ * Displays a page of products with pagination and search functionality.
  * @returns {JSX.Element} The ProductsPage component.
  */
 export default function ProductsPage() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [filteredProducts, setFilteredProducts] = useState([]);
   const productsPerPage = 20;
 
   const router = useRouter();
@@ -22,28 +24,37 @@ export default function ProductsPage() {
   const currentPage = parseInt(searchParams.get("page")) || 1;
 
   /**
-   * Fetches products from the API for the current page.
+   * Fetches products from the API based on the page number or search term.
    * @param {number} page - The current page number.
+   * @param {string} [searchTerm] - Optional search term for product filtering.
    */
-  const fetchProducts = async (page) => {
+  const fetchProducts = async (page, searchTerm = "") => {
     setLoading(true);
     const skip = (page - 1) * productsPerPage;
+    let apiUrl = `https://next-ecommerce-api.vercel.app/products?limit=${productsPerPage}&skip=${skip}`;
     try {
-      const res = await fetch(
-        `https://next-ecommerce-api.vercel.app/products?limit=${productsPerPage}&skip=${skip}`
-      );
+      const res = await fetch(apiUrl);
       const data = await res.json();
       setProducts(data);
+      setFilteredProducts(data);
     } catch (error) {
       console.error("Error fetching products:", error);
     }
     setLoading(false);
   };
 
-  // Fetch products when the current page changes.
+ 
   useEffect(() => {
     fetchProducts(currentPage);
   }, [currentPage]);
+
+  /**
+   * Handles the search operation by calling fetchProducts with the search term.
+   * @param {string} searchTerm - The search term to filter products.
+   */
+  const handleSearch = (searchTerm) => {
+    fetchProducts(1, searchTerm); 
+  };
 
   /**
    * Navigates to the next page of products.
@@ -62,27 +73,17 @@ export default function ProductsPage() {
   };
 
   return (
-    <div className="container mx-auto p-4">
-      <div className="flex justify-center mb-6">
-        <div className="relative w-full max-w-md">
-          <input
-            type="text"
-            placeholder="Search products..."
-            className="w-full px-4 py-2 border rounded-l-md"
-          />
-          <button className="absolute right-0 top-0 h-full bg-blue-500 text-white px-4 rounded-r-md hover:bg-blue-600">
-            Search
-          </button>
-        </div>
-      </div>
+    <div className="cover mx-auto p-4">
+      {/* SearchBar Component */}
+      <SearchBar onSearch={handleSearch} />
 
       {loading ? (
         <Spinner />
-      ) : products.length === 0 ? (
+      ) : filteredProducts.length === 0 ? (
         <ErrorHandler />
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {products.map((product) => (
+          {filteredProducts.map((product) => (
             <div
               key={product.id}
               className="bg-white p-4 shadow-md rounded-lg transition-transform transform hover:scale-105 hover:shadow-lg"
