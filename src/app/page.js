@@ -6,7 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { FaHeart, FaShoppingCart } from "react-icons/fa";
 import Spinner from "./components/common/Spinner";
 import ErrorHandler from "./components/common/ErrorHandler";
-import SearchBar from "./components/common/SearchBar"; 
+import SearchBar from "./components/common/SearchBar";
 
 /**
  * Displays a page of products with pagination and search functionality.
@@ -32,6 +32,11 @@ export default function ProductsPage() {
     setLoading(true);
     const skip = (page - 1) * productsPerPage;
     let apiUrl = `https://next-ecommerce-api.vercel.app/products?limit=${productsPerPage}&skip=${skip}`;
+
+    if (searchTerm) {
+      apiUrl = `https://next-ecommerce-api.vercel.app/products?search=${searchTerm}`;
+    }
+
     try {
       const res = await fetch(apiUrl);
       const data = await res.json();
@@ -43,7 +48,6 @@ export default function ProductsPage() {
     setLoading(false);
   };
 
- 
   useEffect(() => {
     fetchProducts(currentPage);
   }, [currentPage]);
@@ -53,7 +57,7 @@ export default function ProductsPage() {
    * @param {string} searchTerm - The search term to filter products.
    */
   const handleSearch = (searchTerm) => {
-    fetchProducts(1, searchTerm); 
+    fetchProducts(1, searchTerm);
   };
 
   /**

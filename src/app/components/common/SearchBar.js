@@ -1,11 +1,10 @@
-
-
 import { useState } from "react";
+
 
 export default function SearchBar({ onSearch }) {
   const [searchTerm, setSearchTerm] = useState("");
 
- 
+  
   const handleSearch = () => {
     if (searchTerm.trim()) {
       onSearch(searchTerm);
