@@ -103,6 +103,13 @@ export default function ProductsPage() {
   };
 
   /**
+   * Resets the filters, search, and sorting by clearing the query parameters.
+   */
+  const handleReset = () => {
+    router.push(`?page=1`);
+  };
+
+  /**
    * Navigates to the next page of products by updating the URL with the next page number.
    */
   const handleNextPage = () => {
@@ -128,20 +135,30 @@ export default function ProductsPage() {
 
   return (
     <div className="cover mx-auto p-4">
-      <div className="flex flex-col lg:flex-row lg:justify-center lg:items-center lg:space-x-4 mb-4">
+      <div className="flex flex-col lg:flex-row lg:justify-center lg:items-center lg:space-x-4 mb-4 space-y-4 lg:space-y-0">
         {/* SearchBar Component */}
-        <div className="mb-2 lg:mb-0">
+        <div className="w-full lg:w-auto">
           <SearchBar onSearch={handleSearch} />
         </div>
 
         {/* SortByCategory Component */}
-        <div className="mb-2 lg:mb-0">
+        <div className="w-full lg:w-auto">
           <SortByCategory onSort={handleSort} />
         </div>
 
         {/* SortByPrice Component */}
-        <div className="mb-2 lg:mb-0">
+        <div className="w-full lg:w-auto">
           <SortByPrice onSort={handleSortByPrice} />
+        </div>
+
+        {/* Reset Button */}
+        <div className="w-full lg:w-auto">
+          <button
+            className="bg-gray-800 mb-4 text-white w-full lg:w-auto px-4 py-2 rounded"
+            onClick={handleReset}
+          >
+            Reset Filters
+          </button>
         </div>
       </div>
 
