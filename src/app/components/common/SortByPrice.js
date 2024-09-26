@@ -16,7 +16,9 @@ export default function SortByPrice({ onSort }) {
         onChange={handleSortChange}
         className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:border-blue-300"
       >
-       
+        <option value="">Select</option>
+        <option value="asc">Low to High</option>
+        <option value="desc">High to Low</option>
       </select>
     </div>
   );
