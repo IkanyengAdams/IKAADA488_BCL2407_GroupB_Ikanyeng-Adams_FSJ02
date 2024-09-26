@@ -7,7 +7,8 @@ import { FaHeart, FaShoppingCart } from "react-icons/fa";
 import Spinner from "./components/common/Spinner";
 import ErrorHandler from "./components/common/ErrorHandler";
 import SearchBar from "./components/common/SearchBar";
-import SortByCategory from "./components/common/SortByCategory"; // Import SortByCategory component
+import SortByCategory from "./components/common/SortByCategory";
+import SortByPrice from "./components/common/SortByPrice";
 
 /**
  * Displays a page of products with pagination, search, and sort functionality.
@@ -75,6 +76,22 @@ export default function ProductsPage() {
   };
 
   /**
+   * Handles sorting products by price in ascending or descending order.
+   * @param {string} order - The order to sort by ('asc' or 'desc').
+   */
+  const handleSortByPrice = (order) => {
+    const sortedProducts = [...filteredProducts].sort((a, b) => {
+      if (order === "asc") {
+        return a.price - b.price;
+      } else if (order === "desc") {
+        return b.price - a.price;
+      }
+      return 0;
+    });
+    setFilteredProducts(sortedProducts);
+  };
+
+  /**
    * Navigates to the next page of products.
    */
   const handleNextPage = () => {
@@ -97,6 +114,9 @@ export default function ProductsPage() {
 
       {/* SortByCategory Component */}
       <SortByCategory onSort={handleSort} />
+
+      {/* SortByPrice Component */}
+      <SortByPrice onSort={handleSortByPrice} />
 
       {loading ? (
         <Spinner />
