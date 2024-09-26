@@ -3,7 +3,11 @@ import { useState } from "react";
 export default function SortByPrice({ onSort }) {
   const [sortOrder, setSortOrder] = useState("");
 
-
+  const handleSortChange = (e) => {
+    const selectedSort = e.target.value;
+    setSortOrder(selectedSort);
+    onSort(selectedSort);
+  };
 
   return (
     <div className="flex justify-center lg:justify-end mb-4">
