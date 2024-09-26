@@ -18,7 +18,7 @@ export default function ProductDetail({ params }) {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
-
+ 
   const router = useRouter();
 
   /**
@@ -95,7 +95,25 @@ export default function ProductDetail({ params }) {
     return (
       <div className="mt-6">
         <h2 className="text-2xl font-bold mb-4">Customer Reviews</h2>
-        {reviews.map((review, index) => (
+
+        {/* Sort Options */}
+        <div className="flex justify-end mb-4">
+          <label htmlFor="sort-order" className="mr-2">
+            Sort by Date:
+          </label>
+          <select
+            id="sort-order"
+            value={sortOrder}
+            onChange={(e) => handleSortChange(e.target.value)}
+            className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none"
+          >
+            <option value="desc">Newest First</option>
+            <option value="asc">Oldest First</option>
+          </select>
+        </div>
+
+        {/* Render sorted reviews */}
+        {sortedReviews.map((review, index) => (
           <div
             key={index}
             className="border-b border-gray-200 pb-4 mb-4 last:border-b-0"
