@@ -18,7 +18,7 @@ export default function ProductDetail({ params }) {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
-  const [sortOrder, setSortOrder] = useState("desc");
+
 
   const router = useRouter();
 
@@ -84,15 +84,19 @@ export default function ProductDetail({ params }) {
   };
 
   /**
-   * Sorts the reviews by date based on the selected sort order.
+   * Sorts the reviews based on the selected sort type and order.
    * @param {Object[]} reviews - An array of review objects.
    * @returns {Object[]} The sorted array of reviews.
    */
   const sortReviews = (reviews) => {
     return reviews.slice().sort((a, b) => {
-      const dateA = new Date(a.date);
-      const dateB = new Date(b.date);
-      return sortOrder === "asc" ? dateA - dateB : dateB - dateA;
+      if (sortType === "date") {
+        const dateA = new Date(a.date);
+        const dateB = new Date(b.date);
+        return sortOrder === "asc" ? dateA - dateB : dateB - dateA;
+      } else if (sortType === "rating") {
+        return sortOrder === "asc" ? a.rating - b.rating : b.rating - a.rating;
+      }
     });
   };
 
@@ -100,7 +104,7 @@ export default function ProductDetail({ params }) {
    * Handles changes to the sort order (ascending or descending).
    * @param {string} order - The selected sort order ('asc' or 'desc').
    */
-  const handleSortChange = (order) => {
+  const handleSortOrderChange = (order) => {
     setSortOrder(order);
   };
 
@@ -114,25 +118,51 @@ export default function ProductDetail({ params }) {
       return <p>No reviews available for this product.</p>;
     }
 
-    const sortedReviews = sortReviews(reviews);
+    const sortedReviews = sortReviews(reviews); // Sort reviews by selected order
 
     return (
       <div className="mt-6">
-        <h2 className="text-2xl font-bold mb-4">Customer Reviews</h2>z
-        <div className="flex justify-end mb-4">
-          <label htmlFor="sort-order" className="mr-2">
-            Sort by Date:
-          </label>
-          <select
-            id="sort-order"
-            value={sortOrder}
-            onChange={(e) => handleSortChange(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none"
-          >
-            <option value="desc">Newest First</option>
-            <option value="asc">Oldest First</option>
-          </select>
+        <h2 className="text-2xl font-bold mb-4">Customer Reviews</h2>
+
+        {/* Sort Options */}
+        <div className="flex justify-between mb-4">
+          {/* Sort by Type: Date or Rating */}
+          <div>
+            <label htmlFor="sort-type" className="mr-2">
+              Sort by:
+            </label>
+            <select
+              id="sort-type"
+              value={sortType}
+              onChange={(e) => handleSortTypeChange(e.target.value)}
+              className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none"
+            >
+              <option value="date">Date</option>
+              <option value="rating">Rating</option>
+            </select>
+          </div>
+
+          {/* Sort Order: Ascending or Descending */}
+          <div>
+            <label htmlFor="sort-order" className="mr-2">
+              Order:
+            </label>
+            <select
+              id="sort-order"
+              value={sortOrder}
+              onChange={(e) => handleSortOrderChange(e.target.value)}
+              className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none"
+            >
+              <option value="desc">
+                {sortType === "rating" ? "Highest First" : "Newest First"}
+              </option>
+              <option value="asc">
+                {sortType === "rating" ? "Lowest First" : "Oldest First"}
+              </option>
+            </select>
+          </div>
         </div>
+
         {/* Render sorted reviews */}
         {sortedReviews.map((review, index) => (
           <div
