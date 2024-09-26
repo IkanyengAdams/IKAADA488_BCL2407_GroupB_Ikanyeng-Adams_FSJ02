@@ -23,18 +23,24 @@ export default function ProductsPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-
   const searchTerm = searchParams.get("search") || "";
- 
+  const category = searchParams.get("category") || "";
+  const priceOrder = searchParams.get("price") || "";
   const currentPage = parseInt(searchParams.get("page")) || 1;
 
   /**
    * Fetches products from the API based on the page number, search term, category, and price sort order.
    * @param {number} page - The current page number.
    * @param {string} [searchTerm=""] - Optional search term for product filtering.
-  
+   * @param {string} [category=""] - Optional category for sorting products.
+   * @param {string} [priceOrder=""] - Optional price sorting order ('asc' or 'desc').
    */
-  const fetchProducts = async (page, searchTerm = "", category = "", priceOrder = "") => {
+  const fetchProducts = async (
+    page,
+    searchTerm = "",
+    category = "",
+    priceOrder = ""
+  ) => {
     setLoading(true);
     const skip = (page - 1) * productsPerPage;
     let apiUrl = `https://next-ecommerce-api.vercel.app/products?limit=${productsPerPage}&skip=${skip}`;
@@ -47,13 +53,20 @@ export default function ProductsPage() {
       const data = await res.json();
 
       // Sort products by price if requested
-      
+      let sortedProducts = data;
+      if (priceOrder === "asc") {
+        sortedProducts = data.sort((a, b) => a.price - b.price);
+      } else if (priceOrder === "desc") {
+        sortedProducts = data.sort((a, b) => b.price - a.price);
+      }
+
+      setProducts(sortedProducts);
+      setFilteredProducts(sortedProducts);
     } catch (error) {
       console.error("Error fetching products:", error);
     }
     setLoading(false);
   };
-
 
   useEffect(() => {
     fetchProducts(currentPage, searchTerm, category, priceOrder);
@@ -64,7 +77,9 @@ export default function ProductsPage() {
    * @param {string} term - The search term to filter products.
    */
   const handleSearch = (term) => {
-    router.push(`?search=${term}&category=${category}&price=${priceOrder}&page=1`);
+    router.push(
+      `?search=${term}&category=${category}&price=${priceOrder}&page=1`
+    );
   };
 
   /**
@@ -72,7 +87,9 @@ export default function ProductsPage() {
    * @param {string} category - The category to sort products by.
    */
   const handleSort = (category) => {
-    router.push(`?search=${searchTerm}&category=${category}&price=${priceOrder}&page=1`);
+    router.push(
+      `?search=${searchTerm}&category=${category}&price=${priceOrder}&page=1`
+    );
   };
 
   /**
@@ -80,14 +97,20 @@ export default function ProductsPage() {
    * @param {string} order - The order to sort by ('asc' or 'desc').
    */
   const handleSortByPrice = (order) => {
-    router.push(`?search=${searchTerm}&category=${category}&price=${order}&page=1`);
+    router.push(
+      `?search=${searchTerm}&category=${category}&price=${order}&page=1`
+    );
   };
 
   /**
    * Navigates to the next page of products by updating the URL with the next page number.
    */
   const handleNextPage = () => {
-    router.push(`?search=${searchTerm}&category=${category}&price=${priceOrder}&page=${currentPage + 1}`);
+    router.push(
+      `?search=${searchTerm}&category=${category}&price=${priceOrder}&page=${
+        currentPage + 1
+      }`
+    );
   };
 
   /**
@@ -95,7 +118,11 @@ export default function ProductsPage() {
    */
   const handlePrevPage = () => {
     if (currentPage > 1) {
-      router.push(`?search=${searchTerm}&category=${category}&price=${priceOrder}&page=${currentPage - 1}`);
+      router.push(
+        `?search=${searchTerm}&category=${category}&price=${priceOrder}&page=${
+          currentPage - 1
+        }`
+      );
     }
   };
 
