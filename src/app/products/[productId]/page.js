@@ -83,7 +83,11 @@ export default function ProductDetail({ params }) {
     return stars;
   };
 
-
+  /**
+   * Sorts the reviews by date based on the selected sort order.
+   * @param {Object[]} reviews - An array of review objects.
+   * @returns {Object[]} The sorted array of reviews.
+   */
   const sortReviews = (reviews) => {
     return reviews.slice().sort((a, b) => {
       const dateA = new Date(a.date);
@@ -92,7 +96,10 @@ export default function ProductDetail({ params }) {
     });
   };
 
-  
+  /**
+   * Handles changes to the sort order (ascending or descending).
+   * @param {string} order - The selected sort order ('asc' or 'desc').
+   */
   const handleSortChange = (order) => {
     setSortOrder(order);
   };
@@ -111,9 +118,7 @@ export default function ProductDetail({ params }) {
 
     return (
       <div className="mt-6">
-        <h2 className="text-2xl font-bold mb-4">Customer Reviews</h2>
-
-        {/* Sort Options */}
+        <h2 className="text-2xl font-bold mb-4">Customer Reviews</h2>z
         <div className="flex justify-end mb-4">
           <label htmlFor="sort-order" className="mr-2">
             Sort by Date:
@@ -128,7 +133,6 @@ export default function ProductDetail({ params }) {
             <option value="asc">Oldest First</option>
           </select>
         </div>
-
         {/* Render sorted reviews */}
         {sortedReviews.map((review, index) => (
           <div
