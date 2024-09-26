@@ -47,14 +47,13 @@ export default function ProductsPage() {
       const res = await fetch(apiUrl);
       const data = await res.json();
       setProducts(data);
-      setFilteredProducts(data); // Initially show fetched products
+      setFilteredProducts(data);
     } catch (error) {
       console.error("Error fetching products:", error);
     }
     setLoading(false);
   };
 
-  // Fetch products when the current page changes.
   useEffect(() => {
     fetchProducts(currentPage);
   }, [currentPage]);
@@ -109,14 +108,22 @@ export default function ProductsPage() {
 
   return (
     <div className="cover mx-auto p-4">
-      {/* SearchBar Component */}
-      <SearchBar onSearch={handleSearch} />
+      <div className="flex flex-col lg:flex-row lg:justify-center lg:items-center lg:space-x-4 mb-4">
+        {/* SearchBar Component */}
+        <div className="mb-2 lg:mb-0">
+          <SearchBar onSearch={handleSearch} />
+        </div>
 
-      {/* SortByCategory Component */}
-      <SortByCategory onSort={handleSort} />
+        {/* SortByCategory Component */}
+        <div className="mb-2 lg:mb-0">
+          <SortByCategory onSort={handleSort} />
+        </div>
 
-      {/* SortByPrice Component */}
-      <SortByPrice onSort={handleSortByPrice} />
+        {/* SortByPrice Component */}
+        <div className="mb-2 lg:mb-0">
+          <SortByPrice onSort={handleSortByPrice} />
+        </div>
+      </div>
 
       {loading ? (
         <Spinner />
