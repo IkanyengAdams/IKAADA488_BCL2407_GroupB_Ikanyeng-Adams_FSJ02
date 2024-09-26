@@ -18,7 +18,8 @@ export default function ProductDetail({ params }) {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
-
+  const [sortOrder, setSortOrder] = useState("desc");
+  const [sortType, setSortType] = useState("date");
 
   const router = useRouter();
 
@@ -106,6 +107,14 @@ export default function ProductDetail({ params }) {
    */
   const handleSortOrderChange = (order) => {
     setSortOrder(order);
+  };
+
+  /**
+   * Handles changes to the sort type (by date or by rating).
+   * @param {string} type - The selected sort type ('date' or 'rating').
+   */
+  const handleSortTypeChange = (type) => {
+    setSortType(type);
   };
 
   /**
