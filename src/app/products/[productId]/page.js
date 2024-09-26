@@ -18,7 +18,8 @@ export default function ProductDetail({ params }) {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
- 
+  const [sortOrder, setSortOrder] = useState("desc");
+
   const router = useRouter();
 
   /**
@@ -82,6 +83,20 @@ export default function ProductDetail({ params }) {
     return stars;
   };
 
+
+  const sortReviews = (reviews) => {
+    return reviews.slice().sort((a, b) => {
+      const dateA = new Date(a.date);
+      const dateB = new Date(b.date);
+      return sortOrder === "asc" ? dateA - dateB : dateB - dateA;
+    });
+  };
+
+  
+  const handleSortChange = (order) => {
+    setSortOrder(order);
+  };
+
   /**
    * Renders customer reviews for the product.
    * @param {Object[]} reviews - An array of review objects containing reviewerName, date, rating, and comment.
@@ -91,6 +106,8 @@ export default function ProductDetail({ params }) {
     if (!reviews || reviews.length === 0) {
       return <p>No reviews available for this product.</p>;
     }
+
+    const sortedReviews = sortReviews(reviews);
 
     return (
       <div className="mt-6">
