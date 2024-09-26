@@ -7,9 +7,10 @@ import { FaHeart, FaShoppingCart } from "react-icons/fa";
 import Spinner from "./components/common/Spinner";
 import ErrorHandler from "./components/common/ErrorHandler";
 import SearchBar from "./components/common/SearchBar";
+import SortByCategory from "./components/common/SortByCategory"; // Import SortByCategory component
 
 /**
- * Displays a page of products with pagination and search functionality.
+ * Displays a page of products with pagination, search, and sort functionality.
  * @returns {JSX.Element} The ProductsPage component.
  */
 export default function ProductsPage() {
@@ -20,34 +21,39 @@ export default function ProductsPage() {
 
   const router = useRouter();
   const searchParams = useSearchParams();
-
   const currentPage = parseInt(searchParams.get("page")) || 1;
 
   /**
    * Fetches products from the API based on the page number or search term.
    * @param {number} page - The current page number.
    * @param {string} [searchTerm] - Optional search term for product filtering.
+   * @param {string} [category] - Optional category for sorting products.
    */
-  const fetchProducts = async (page, searchTerm = "") => {
+  const fetchProducts = async (page, searchTerm = "", category = "") => {
     setLoading(true);
     const skip = (page - 1) * productsPerPage;
     let apiUrl = `https://next-ecommerce-api.vercel.app/products?limit=${productsPerPage}&skip=${skip}`;
 
     if (searchTerm) {
-      apiUrl = `https://next-ecommerce-api.vercel.app/products?search=${searchTerm}`;
+      apiUrl += `&search=${searchTerm}`;
+    }
+
+    if (category) {
+      apiUrl += `&category=${category}`;
     }
 
     try {
       const res = await fetch(apiUrl);
       const data = await res.json();
       setProducts(data);
-      setFilteredProducts(data);
+      setFilteredProducts(data); // Initially show fetched products
     } catch (error) {
       console.error("Error fetching products:", error);
     }
     setLoading(false);
   };
 
+  // Fetch products when the current page changes.
   useEffect(() => {
     fetchProducts(currentPage);
   }, [currentPage]);
@@ -58,6 +64,14 @@ export default function ProductsPage() {
    */
   const handleSearch = (searchTerm) => {
     fetchProducts(1, searchTerm);
+  };
+
+  /**
+   * Handles sorting by calling fetchProducts with the selected category.
+   * @param {string} category - The category to sort products by.
+   */
+  const handleSort = (category) => {
+    fetchProducts(currentPage, "", category);
   };
 
   /**
@@ -80,6 +94,9 @@ export default function ProductsPage() {
     <div className="cover mx-auto p-4">
       {/* SearchBar Component */}
       <SearchBar onSearch={handleSearch} />
+
+      {/* SortByCategory Component */}
+      <SortByCategory onSort={handleSort} />
 
       {loading ? (
         <Spinner />
