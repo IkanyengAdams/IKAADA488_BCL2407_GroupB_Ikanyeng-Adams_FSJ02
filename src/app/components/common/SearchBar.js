@@ -6,7 +6,15 @@ export default function SearchBar({ onSearch }) {
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm);
 
   
-  
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 300);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchTerm]);
 
   useEffect(() => {
     if (debouncedSearchTerm.trim()) {
