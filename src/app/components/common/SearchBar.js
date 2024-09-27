@@ -4,17 +4,19 @@ export default function SearchBar({ onSearch }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm);
+  const [noResults, setNoResults] = useState(false);
 
-  
+
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedSearchTerm(searchTerm);
-    }, 300);
+    }, 300); 
 
     return () => {
       clearTimeout(handler);
     };
   }, [searchTerm]);
+
 
   useEffect(() => {
     if (debouncedSearchTerm.trim()) {
@@ -24,7 +26,14 @@ export default function SearchBar({ onSearch }) {
             `https://next-ecommerce-api.vercel.app/products?search=${debouncedSearchTerm}`
           );
           const data = await response.json();
-          setSuggestions(data);
+          
+          if (data.length > 0) {
+            setSuggestions(data);
+            setNoResults(false);
+          } else {
+            setSuggestions([]);
+            setNoResults(true);
+          }
         } catch (error) {
           console.error("Error fetching search suggestions:", error);
         }
@@ -33,6 +42,7 @@ export default function SearchBar({ onSearch }) {
       fetchSuggestions();
     } else {
       setSuggestions([]);
+      setNoResults(false);
     }
   }, [debouncedSearchTerm]);
 
@@ -59,15 +69,16 @@ export default function SearchBar({ onSearch }) {
           Search
         </button>
 
-        {suggestions.length > 0 && (
+        
+        {suggestions.length > 0 ? (
           <ul className="absolute top-full left-0 w-full bg-white border border-gray-300 rounded-md mt-1 max-h-60 overflow-y-auto z-10">
             {suggestions.map((product) => (
               <li
                 key={product.id}
                 onClick={() => {
-                  setSearchTerm(product.title); 
+                  setSearchTerm(product.title);
                   setSuggestions([]);
-                  onSearch(product.title); 
+                  onSearch(product.title);
                 }}
                 className="px-4 py-2 hover:bg-gray-200 cursor-pointer"
               >
@@ -75,6 +86,12 @@ export default function SearchBar({ onSearch }) {
               </li>
             ))}
           </ul>
+        ) : (
+          noResults && (
+            <div className="absolute top-full left-0 w-full bg-white border border-gray-300 rounded-md mt-1 z-10 p-4 text-gray-600">
+              No product(s) found
+            </div>
+          )
         )}
       </div>
     </div>
