@@ -1,11 +1,37 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function SearchBar({ onSearch }) {
   const [searchTerm, setSearchTerm] = useState("");
+  const [suggestions, setSuggestions] = useState([]);
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm);
+
+  
   
 
+  useEffect(() => {
+    if (debouncedSearchTerm.trim()) {
+      const fetchSuggestions = async () => {
+        try {
+          const response = await fetch(
+            `https://next-ecommerce-api.vercel.app/products?search=${debouncedSearchTerm}`
+          );
+          const data = await response.json();
+          setSuggestions(data);
+        } catch (error) {
+          console.error("Error fetching search suggestions:", error);
+        }
+      };
+
+      fetchSuggestions();
+    } else {
+      setSuggestions([]);
+    }
+  }, [debouncedSearchTerm]);
+
   const handleSearch = () => {
-    
+    if (debouncedSearchTerm.trim()) {
+      onSearch(debouncedSearchTerm);
+    }
   };
 
   return (
@@ -31,9 +57,9 @@ export default function SearchBar({ onSearch }) {
               <li
                 key={product.id}
                 onClick={() => {
-                  setSearchTerm(product.title);
+                  setSearchTerm(product.title); 
                   setSuggestions([]);
-                  onSearch(product.title);
+                  onSearch(product.title); 
                 }}
                 className="px-4 py-2 hover:bg-gray-200 cursor-pointer"
               >
