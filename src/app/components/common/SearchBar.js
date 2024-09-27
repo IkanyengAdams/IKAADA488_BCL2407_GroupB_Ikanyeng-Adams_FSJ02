@@ -1,18 +1,15 @@
 import { useState } from "react";
 
-
 export default function SearchBar({ onSearch }) {
   const [searchTerm, setSearchTerm] = useState("");
-
   
+
   const handleSearch = () => {
-    if (searchTerm.trim()) {
-      onSearch(searchTerm);
-    }
+    
   };
 
   return (
-    <div className="flex justify-center mb-6">
+    <div className="relative flex justify-center mb-6">
       <div className="relative w-full max-w-md">
         <input
           type="text"
@@ -27,6 +24,24 @@ export default function SearchBar({ onSearch }) {
         >
           Search
         </button>
+
+        {suggestions.length > 0 && (
+          <ul className="absolute top-full left-0 w-full bg-white border border-gray-300 rounded-md mt-1 max-h-60 overflow-y-auto z-10">
+            {suggestions.map((product) => (
+              <li
+                key={product.id}
+                onClick={() => {
+                  setSearchTerm(product.title);
+                  setSuggestions([]);
+                  onSearch(product.title);
+                }}
+                className="px-4 py-2 hover:bg-gray-200 cursor-pointer"
+              >
+                {product.title}
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
     </div>
   );
