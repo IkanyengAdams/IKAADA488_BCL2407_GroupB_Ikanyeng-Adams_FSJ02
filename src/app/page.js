@@ -47,21 +47,14 @@ export default function ProductsPage() {
 
     if (searchTerm) apiUrl += `&search=${searchTerm}`;
     if (category) apiUrl += `&category=${category}`;
+    if (priceOrder) apiUrl += `&sortBy=price&order=${priceOrder}`;
 
     try {
       const res = await fetch(apiUrl);
       const data = await res.json();
 
-      // Sort products by price if requested
-      let sortedProducts = data;
-      if (priceOrder === "asc") {
-        sortedProducts = data.sort((a, b) => a.price - b.price);
-      } else if (priceOrder === "desc") {
-        sortedProducts = data.sort((a, b) => b.price - a.price);
-      }
-
-      setProducts(sortedProducts);
-      setFilteredProducts(sortedProducts);
+      setProducts(data);
+      setFilteredProducts(data);
     } catch (error) {
       console.error("Error fetching products:", error);
     }
