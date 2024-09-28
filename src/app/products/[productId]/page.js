@@ -3,7 +3,7 @@
 import Spinner from "../../components/common/Spinner";
 import { useEffect, useState } from "react";
 import { FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import ErrorHandler from "../../components/common/ErrorHandler";
 
 /**
@@ -22,6 +22,12 @@ export default function ProductDetail({ params }) {
   const [sortType, setSortType] = useState("date");
 
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const searchTerm = searchParams.get("search") || "";
+  const category = searchParams.get("category") || "";
+  const priceOrder = searchParams.get("price") || "";
+  const currentPage = searchParams.get("page") || 1;
 
   /**
    * Fetches the product details based on the productId.
@@ -203,7 +209,16 @@ export default function ProductDetail({ params }) {
       <div className="flex flex-col lg:flex-row bg-white p-6 shadow-md rounded-lg">
         <div className="relative lg:w-1/3 w-full mb-4 lg:mb-0 lg:mr-4">
           <button
-            onClick={() => router.push("/")}
+            onClick={() => {
+              const params = new URLSearchParams({
+                search: searchTerm,
+                category: category,
+                price: priceOrder,
+                page: currentPage,
+              });
+
+              router.push(`/?${params.toString()}`);
+            }}
             className="absolute -top-6 left-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 z-10"
           >
             Back to Products
