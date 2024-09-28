@@ -18,6 +18,7 @@ export default function ProductsPage() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filteredProducts, setFilteredProducts] = useState([]);
+  const [errorMessage, setErrorMessage] = useState("");
   const productsPerPage = 20;
 
   const router = useRouter();
@@ -42,6 +43,7 @@ export default function ProductsPage() {
     priceOrder = ""
   ) => {
     setLoading(true);
+    setErrorMessage("");
     const skip = (page - 1) * productsPerPage;
     let apiUrl = `https://next-ecommerce-api.vercel.app/products?limit=${productsPerPage}&skip=${skip}`;
 
@@ -53,10 +55,20 @@ export default function ProductsPage() {
       const res = await fetch(apiUrl);
       const data = await res.json();
 
-      setProducts(data);
-      setFilteredProducts(data);
+      if (!Array.isArray(data)) {
+        setErrorMessage("Invalid data received.");
+        setFilteredProducts([]);
+      } else if (data.length === 0) {
+        setErrorMessage("Product does not exist");
+        setFilteredProducts([]);
+      } else {
+        setProducts(data);
+        setFilteredProducts(data);
+      }
     } catch (error) {
       console.error("Error fetching products:", error);
+      setErrorMessage("An error occurred while fetching products.");
+      setFilteredProducts([]);
     }
     setLoading(false);
   };
@@ -157,48 +169,51 @@ export default function ProductsPage() {
 
       {loading ? (
         <Spinner />
-      ) : filteredProducts.length === 0 ? (
+      ) : errorMessage ? (
+        <div className="text-center text-red-500 font-bold">{errorMessage}</div>
+      ) : Array.isArray(filteredProducts) && filteredProducts.length === 0 ? (
         <ErrorHandler />
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {filteredProducts.map((product) => (
-            <div
-              key={product.id}
-              className="bg-white p-4 shadow-md rounded-lg transition-transform transform hover:scale-105 hover:shadow-lg"
-            >
-              <ImageCarousel images={product.images} />
-              <h2 className="text-xl font-semibold mb-2 text-black">
-                {product.title}
-              </h2>
-              <p className="text-gray-800">{product.category}</p>
-              <p className="text-gray-900 font-bold">${product.price}</p>
+        Array.isArray(filteredProducts) && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {filteredProducts.map((product) => (
+              <div
+                key={product.id}
+                className="bg-white p-4 shadow-md rounded-lg transition-transform transform hover:scale-105 hover:shadow-lg"
+              >
+                <ImageCarousel images={product.images} />
+                <h2 className="text-xl font-semibold mb-2 text-black">
+                  {product.title}
+                </h2>
+                <p className="text-gray-800">{product.category}</p>
+                <p className="text-gray-900 font-bold">${product.price}</p>
 
-              <div className="flex justify-center mt-4">
-                {/* Passing current search, category, and sort info to the detail page */}
-                <Link
-                  href={{
-                    pathname: `/products/${product.id}`,
-                    query: {
-                      search: searchTerm,
-                      category: category,
-                      price: priceOrder,
-                      page: currentPage,
-                    },
-                  }}
-                >
-                  <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-                    View Product
-                  </button>
-                </Link>
-              </div>
+                <div className="flex justify-center mt-4">
+                  <Link
+                    href={{
+                      pathname: `/products/${product.id}`,
+                      query: {
+                        search: searchTerm,
+                        category: category,
+                        price: priceOrder,
+                        page: currentPage,
+                      },
+                    }}
+                  >
+                    <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                      View Product
+                    </button>
+                  </Link>
+                </div>
 
-              <div className="flex justify-center space-x-4 mt-2">
-                <FaHeart className="text-gray-400 text-xl" />
-                <FaShoppingCart className="text-gray-400 text-xl" />
+                <div className="flex justify-center space-x-4 mt-2">
+                  <FaHeart className="text-gray-400 text-xl" />
+                  <FaShoppingCart className="text-gray-400 text-xl" />
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )
       )}
 
       <div className="flex justify-between mt-4">
