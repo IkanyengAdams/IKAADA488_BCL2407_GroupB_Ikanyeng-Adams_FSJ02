@@ -174,7 +174,18 @@ export default function ProductsPage() {
               <p className="text-gray-900 font-bold">${product.price}</p>
 
               <div className="flex justify-center mt-4">
-                <Link href={`/products/${product.id}`}>
+                {/* Passing current search, category, and sort info to the detail page */}
+                <Link
+                  href={{
+                    pathname: `/products/${product.id}`,
+                    query: {
+                      search: searchTerm,
+                      category: category,
+                      price: priceOrder,
+                      page: currentPage,
+                    },
+                  }}
+                >
                   <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
                     View Product
                   </button>
@@ -238,7 +249,7 @@ function ImageCarousel({ images }) {
       <img
         src={images[currentImage]}
         alt={`Product Image ${currentImage + 1}`}
-        className="h-80 w-full object-cover mb-4"
+        className="h-80 w-full object-contain mb-4"
       />
       {images.length > 1 && (
         <>
@@ -246,13 +257,13 @@ function ImageCarousel({ images }) {
             onClick={handlePrevImage}
             className="absolute top-1/2 left-2 transform -translate-y-1/2 bg-gray-800 text-white px-2 py-1 rounded-full"
           >
-            &#8249;
+            &lt;
           </button>
           <button
             onClick={handleNextImage}
             className="absolute top-1/2 right-2 transform -translate-y-1/2 bg-gray-800 text-white px-2 py-1 rounded-full"
           >
-            &#8250;
+            &gt;
           </button>
         </>
       )}
