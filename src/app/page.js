@@ -19,6 +19,7 @@ export default function ProductsPage() {
   const [loading, setLoading] = useState(true);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
+  const [hasMoreProducts, setHasMoreProducts] = useState(true);
   const productsPerPage = 20;
 
   const router = useRouter();
@@ -58,17 +59,21 @@ export default function ProductsPage() {
       if (!Array.isArray(data)) {
         setErrorMessage("Invalid data received.");
         setFilteredProducts([]);
+        setHasMoreProducts(false);
       } else if (data.length === 0) {
         setErrorMessage("Product does not exist");
         setFilteredProducts([]);
+        setHasMoreProducts(false);
       } else {
         setProducts(data);
         setFilteredProducts(data);
+        setHasMoreProducts(data.length === productsPerPage);
       }
     } catch (error) {
       console.error("Error fetching products:", error);
       setErrorMessage("An error occurred while fetching products.");
       setFilteredProducts([]);
+      setHasMoreProducts(false);
     }
     setLoading(false);
   };
@@ -222,15 +227,18 @@ export default function ProductsPage() {
             className="bg-gray-800 text-white px-4 py-2 rounded"
             onClick={handlePrevPage}
           >
-            Previous Page
+            Previous
           </button>
         )}
-        <button
-          className="bg-gray-800 text-white px-4 py-2 rounded"
-          onClick={handleNextPage}
-        >
-          Next Page
-        </button>
+
+        {hasMoreProducts && (
+          <button
+            className="bg-gray-800 text-white px-4 py-2 rounded"
+            onClick={handleNextPage}
+          >
+            Next
+          </button>
+        )}
       </div>
     </div>
   );
