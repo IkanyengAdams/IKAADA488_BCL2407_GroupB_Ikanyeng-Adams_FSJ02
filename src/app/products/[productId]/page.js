@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa";
 import { useRouter, useSearchParams } from "next/navigation";
 import ErrorHandler from "../../components/common/ErrorHandler";
+import Head from "next/head";
 
 /**
  * ProductDetail component displays the details of a single product including images, rating, and reviews.
@@ -206,6 +207,25 @@ export default function ProductDetail({ params }) {
 
   return (
     <div className="container mx-auto p-4">
+      <Head>
+        <title>
+          {product ? `${product.title} | Your Store` : "Loading..."}
+        </title>
+        <meta
+          name="description"
+          content={product ? product.description : "Loading..."}
+        />
+        <meta
+          property="og:title"
+          content={product ? product.title : "Loading..."}
+        />
+        <meta
+          property="og:description"
+          content={product ? product.description : "Loading..."}
+        />
+        <meta property="og:image" content={product ? product.images[0] : ""} />
+      </Head>
+
       <div className="flex flex-col lg:flex-row bg-white p-6 shadow-md rounded-lg">
         <div className="relative lg:w-1/3 w-full mb-4 lg:mb-0 lg:mr-4">
           <button
